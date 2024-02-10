@@ -9,6 +9,7 @@ import pl.bodzioch.damian.github.GitRepositoryModel;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,16 +30,22 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     private List<Repository> collectRepositoryData(String username) {
-        List<GitRepositoryModel> repositories = gitHubClient.getRepositories(username).stream()
-                .filter(GitRepositoryModel::isNotFork)
-                .toList();
-        Iterator<List<GitBranchModel>> branchesIterator = repositories.stream()
-                .map(repo -> gitHubClient.getBranches(username, repo.getRepositoryName()))
-                .toList()
-                .iterator();
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<GitRepositoryModel> repositories = gitHubClient.getRepositories(username).stream()
+                    .filter(GitRepositoryModel::isNotFork)
+                    .toList();
+            List<CompletableFuture<List<GitBranchModel>>> branchFutures = repositories.stream()
+                    .map(repo -> CompletableFuture.supplyAsync(() -> gitHubClient.getBranches(username, repo.getRepositoryName()), executor))
+                    .toList();
 
-        return repositories.stream()
-                .map(repo -> Repository.of(repo, branchesIterator.next()))
-                .toList();
+            Iterator<List<GitBranchModel>> branchesIterator = branchFutures.stream()
+                    .map(CompletableFuture::join)
+                    .toList()
+                    .iterator();
+
+            return repositories.stream()
+                    .map(repo -> Repository.of(repo, branchesIterator.next()))
+                    .toList();
+        }
     }
 }
