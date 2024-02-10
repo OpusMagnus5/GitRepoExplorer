@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @AllArgsConstructor
@@ -18,7 +17,7 @@ public class RepositoryController {
     private final RepositoryService repositoryService;
 
     @GetMapping("/{username}")
-    public ResponseEntity<GetRepositoryResponse> getRepositories(@PathVariable("username") String username) throws ExecutionException, InterruptedException {
+    public ResponseEntity<GetRepositoryResponse> getRepositories(@PathVariable("username") String username) {
         List<Repository> repositories = repositoryService.getRepositoryData(username);
         List<RepositoryView> repositoryViews = repositories.stream()
                 .map(RepositoryView::of)

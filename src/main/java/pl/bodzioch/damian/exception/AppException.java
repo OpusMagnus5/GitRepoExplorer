@@ -23,18 +23,4 @@ public class AppException extends RuntimeException {
         this.messageParams = Collections.emptyList();
         this.httpStatus = httpStatus;
     }
-
-    public AppException(String message, List<String> messageParams, HttpStatus httpStatus, Exception exception) {
-        super(message, exception);
-        this.messageParams = messageParams;
-        this.httpStatus = httpStatus;
-    }
-
-    public static AppException getGeneralException() {
-        return new AppException("general.error", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    public static AppException getGeneralException(Exception exception) {
-        return new AppException("general.error", HttpStatus.INTERNAL_SERVER_ERROR, exception);
-    }
 }
