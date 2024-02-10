@@ -11,8 +11,10 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/repository")
+@RequestMapping(RepositoryController.REPOSITORY_CONTROLLER_PATH)
 public class RepositoryController {
+
+    public static final String REPOSITORY_CONTROLLER_PATH = "/repository";
 
     private final RepositoryService repositoryService;
 
