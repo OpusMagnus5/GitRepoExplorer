@@ -12,13 +12,13 @@ import java.util.List;
 @Setter
 class RepositoryView implements Serializable {
 
-    private String ownerName;
+    private String ownerLogin;
     private String name;
     private List<BranchView> branches;
 
     protected static RepositoryView of(Repository repository) {
         return RepositoryView.builder()
-                .ownerName(repository.getOwnerLogin())
+                .ownerLogin(repository.getOwnerLogin())
                 .name(repository.getName())
                 .branches(repository.getBranches().stream()
                         .map(BranchView::of)

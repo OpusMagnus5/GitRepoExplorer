@@ -12,12 +12,12 @@ import java.io.Serializable;
 class BranchView implements Serializable {
 
     private String name;
-    private String sha;
+    private String lastCommitSha;
 
     protected static BranchView of(Branch branch) {
         return BranchView.builder()
                 .name(branch.getName())
-                .sha(branch.getSha())
+                .lastCommitSha(branch.getSha())
                 .build();
     }
 }
